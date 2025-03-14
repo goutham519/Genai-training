@@ -20,25 +20,13 @@ public class PromptService {
     private final Kernel kernel;
     private final InvocationContext invocationContext;
 
-    public PromptResponse getChatBotResponse(String userPrompt, Boolean integratePlugin) {
+    public PromptResponse getChatBotResponse(String userPrompt) {
 
         ChatHistory history = new ChatHistory();
         history.addUserMessage(userPrompt);
-        List<ChatMessageContent<?>> results;
-
-        if (integratePlugin) {
-
-            results =
-                    chatCompletionService
-                            .getChatMessageContentsAsync(history, kernel, invocationContext)
-                            .block();
-        } else {
-            results =
-                    chatCompletionService
-                            .getChatMessageContentsAsync(history, null, invocationContext)
-                            .block();
-        }
-
+        List<ChatMessageContent<?>> results = chatCompletionService
+                .getChatMessageContentsAsync(history, null, invocationContext)
+                .block();
         String response =
                 Optional.ofNullable(results).orElse(List.of()).stream()
                         .filter(
@@ -48,7 +36,6 @@ public class PromptService {
                         .map(ChatMessageContent::getContent)
                         .findFirst()
                         .orElse("No Output, Something is wrong . . !");
-
         return PromptResponse.builder().userPrompt(userPrompt).chatBotResponse(response).build();
     }
 }

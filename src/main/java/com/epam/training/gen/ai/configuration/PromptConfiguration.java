@@ -45,6 +45,7 @@ public class PromptConfiguration {
                 .withOpenAIAsyncClient(openAIAsyncClient())
                 .build();
     }
+
     // Mobile Phones Plugin
     @Bean
     public KernelPlugin kernelPlugin() {
