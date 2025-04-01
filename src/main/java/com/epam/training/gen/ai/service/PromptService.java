@@ -36,6 +36,6 @@ public class PromptService {
                         .map(ChatMessageContent::getContent)
                         .findFirst()
                         .orElse("No Output, Something is wrong . . !");
-        return PromptResponse.builder().userPrompt(userPrompt).chatBotResponse(response).build();
+        return PromptResponse.builder().userPrompt(userPrompt).aiResponse(response).build();
     }
 }

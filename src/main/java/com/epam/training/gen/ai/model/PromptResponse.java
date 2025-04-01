@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PromptResponse {
     private String userPrompt;
-    private String chatBotResponse;
+    private String aiResponse;
 }
