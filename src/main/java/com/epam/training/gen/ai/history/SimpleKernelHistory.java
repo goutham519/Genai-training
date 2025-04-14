@@ -53,7 +53,7 @@ public class SimpleKernelHistory {
                 "I know about you that your name is Teja Mitte and you're a java developer.");
         chatHistory.forEach(chatMessageContent -> log.info(chatMessageContent.getContent()));
         log.info("AI answer : {}", result);
-        return PromptResponse.builder().userPrompt(prompt).chatBotResponse(result).build();
+        return PromptResponse.builder().userPrompt(prompt).aiResponse(result).build();
     }
 
     /**

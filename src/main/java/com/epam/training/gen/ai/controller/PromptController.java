@@ -3,9 +3,14 @@ package com.epam.training.gen.ai.controller;
 import com.epam.training.gen.ai.history.SimpleKernelHistory;
 import com.epam.training.gen.ai.model.Chat;
 import com.epam.training.gen.ai.model.PromptResponse;
+import com.epam.training.gen.ai.model.UserRequest;
 import com.epam.training.gen.ai.service.PromptService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -15,6 +20,10 @@ import java.util.Optional;
 public class PromptController {
     private final PromptService promptService;
     private final SimpleKernelHistory kernelHistory;
+    private final RestTemplate restTemplate;
+
+    @Value("${epam.dial.deployment-names-api}")
+    private String DEPLOYMENT_NAMES_URL;
 
     /**
      * @param userPrompt Input from the User
@@ -33,6 +42,14 @@ public class PromptController {
         return Optional.ofNullable(kernelHistory)
                 .map(kernelHistory -> kernelHistory.processWithHistory(chat))
                 .orElseGet(PromptResponse::new);
+    }
+
+    @GetMapping(value = "getDeploymentNames")
+    public ResponseEntity<String> getDeploymentNames() {
+        return new ResponseEntity<>(
+                Optional.ofNullable(restTemplate.getForObject(DEPLOYMENT_NAMES_URL, String.class))
+                        .orElseThrow(),
+                HttpStatus.OK);
     }
 
 }

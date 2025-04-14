@@ -12,12 +12,17 @@ import com.microsoft.semantickernel.orchestration.ToolCallBehavior;
 import com.microsoft.semantickernel.plugin.KernelPlugin;
 import com.microsoft.semantickernel.plugin.KernelPluginFactory;
 import com.microsoft.semantickernel.services.chatcompletion.ChatCompletionService;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 @Configuration
+@Getter
 public class PromptConfiguration {
 
     @Value("${client-azureopenai-key}")
@@ -27,7 +32,9 @@ public class PromptConfiguration {
     private String CLIENT_ENDPOINT;
 
     @Value("${client-azureopenai-deployment-name}")
-    private String DEPLOYMENT_NAME;
+    private String deploymentName;
+
+    public static final String API_KEY = "Api-Key";
 
     @Bean
     @Primary
@@ -41,7 +48,7 @@ public class PromptConfiguration {
     @Bean
     public ChatCompletionService chatCompletionService() {
         return OpenAIChatCompletion.builder()
-                .withModelId(DEPLOYMENT_NAME)
+                .withModelId(deploymentName)
                 .withOpenAIAsyncClient(openAIAsyncClient())
                 .build();
     }
@@ -49,7 +56,7 @@ public class PromptConfiguration {
     // Mobile Phones Plugin
     @Bean
     public KernelPlugin kernelPlugin() {
-        return KernelPluginFactory.createFromObject(new SimplePlugin(), "Simple Plugin");
+        return KernelPluginFactory.createFromObject(new SimplePlugin(), "SimplePlugin");
     }
 
     //  kernel with Azure OpenAI chat completion and plugin
@@ -68,5 +75,17 @@ public class PromptConfiguration {
                 .withReturnMode(InvocationReturnMode.LAST_MESSAGE_ONLY)
                 .withToolCallBehavior(ToolCallBehavior.allowAllKernelFunctions(true))
                 .build();
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setInterceptors(
+                List.of(
+                        (request, body, execution) -> {
+                            request.getHeaders().set(API_KEY, AZURE_CLIENT_KEY);
+                            return execution.execute(request, body);
+                        }));
+        return restTemplate;
     }
 }
