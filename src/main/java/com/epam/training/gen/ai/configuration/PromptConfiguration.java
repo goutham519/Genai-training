@@ -12,6 +12,7 @@ import com.microsoft.semantickernel.orchestration.ToolCallBehavior;
 import com.microsoft.semantickernel.plugin.KernelPlugin;
 import com.microsoft.semantickernel.plugin.KernelPluginFactory;
 import com.microsoft.semantickernel.services.chatcompletion.ChatCompletionService;
+import com.microsoft.semantickernel.services.chatcompletion.ChatHistory;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -87,5 +88,9 @@ public class PromptConfiguration {
                             return execution.execute(request, body);
                         }));
         return restTemplate;
+    }
+    @Bean
+    public ChatHistory chatHistory() {
+        return new ChatHistory();
     }
 }

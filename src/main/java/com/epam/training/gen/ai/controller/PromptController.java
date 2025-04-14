@@ -1,6 +1,5 @@
 package com.epam.training.gen.ai.controller;
 
-import com.epam.training.gen.ai.history.SimpleKernelHistory;
 import com.epam.training.gen.ai.model.Chat;
 import com.epam.training.gen.ai.model.PromptResponse;
 import com.epam.training.gen.ai.model.UserRequest;
@@ -19,7 +18,6 @@ import java.util.Optional;
 @RequestMapping("/api/prompt")
 public class PromptController {
     private final PromptService promptService;
-    private final SimpleKernelHistory kernelHistory;
     private final RestTemplate restTemplate;
 
     @Value("${epam.dial.deployment-names-api}")
@@ -38,9 +36,9 @@ public class PromptController {
                 .orElseGet(PromptResponse::new);
     }
     @PostMapping(value = "/init-chat")
-    public PromptResponse getResponseFromHistory(@RequestBody Chat chat) {
-        return Optional.ofNullable(kernelHistory)
-                .map(kernelHistory -> kernelHistory.processWithHistory(chat))
+    public PromptResponse getResponseFromHistory(@RequestBody UserRequest userRequest) {
+        return Optional.ofNullable(promptService)
+                .map(promptService -> promptService.processWithHistory(userRequest))
                 .orElseGet(PromptResponse::new);
     }
 
